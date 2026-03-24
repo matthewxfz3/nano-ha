@@ -1,0 +1,62 @@
+services:
+  # AI Agent — starts first, deploys other services as needed
+  nanobot:
+    image: python:3.12-slim
+    container_name: nanoha-agent
+    volumes:
+      - ./config/nanobot:/app/config
+      - ./tools:/app/tools
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file: .env
+    working_dir: /app
+    command: >
+      bash -c "pip install -q nanobot-ai python-hass-client &&
+               nanobot --config /app/config/config.yaml"
+    restart: unless-stopped
+    networks:
+      - nanoha
+
+  # Home Assistant Core — deployed by agent
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    container_name: nanoha-ha
+    volumes:
+      - ./config/ha:/config
+      - ./bridge:/config/custom_components/nanoha
+    ports:
+      - "8123:8123"
+    restart: unless-stopped
+    networks:
+      - nanoha
+    profiles:
+      - ha
+
+  # Speech-to-Text — deployed by agent when Voice PE is set up
+  whisper:
+    image: rhasspy/wyoming-whisper:latest
+    container_name: nanoha-whisper
+    command: --model small --language en
+    ports:
+      - "10300:10300"
+    restart: unless-stopped
+    networks:
+      - nanoha
+    profiles:
+      - voice
+
+  # Text-to-Speech — deployed by agent when Voice PE is set up
+  piper:
+    image: rhasspy/wyoming-piper:latest
+    container_name: nanoha-piper
+    command: --voice en_US-lessac-medium
+    ports:
+      - "10200:10200"
+    restart: unless-stopped
+    networks:
+      - nanoha
+    profiles:
+      - voice
+
+networks:
+  nanoha:
+    driver: bridge

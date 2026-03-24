@@ -1,0 +1,16 @@
+# Environment
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Docker volumes
+data/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

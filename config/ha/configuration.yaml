@@ -1,0 +1,16 @@
+# NanoHA — Pre-configured Home Assistant
+# This file is auto-generated. The agent will modify it as needed.
+
+homeassistant:
+  name: NanoHA
+  unit_system: metric
+
+# Enable API access
+api:
+
+# Enable HTTP
+http:
+  server_port: 8123
+
+# Default config includes frontend, history, etc.
+default_config:
