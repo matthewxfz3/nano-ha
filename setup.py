@@ -29,6 +29,7 @@ HA_DEPS = [
     # ESPHome (Voice PE) + TTS
     "aioesphomeapi",
     "bleak-esphome",
+    "esphome-dashboard-api",
     "gtts",
 ]
 
