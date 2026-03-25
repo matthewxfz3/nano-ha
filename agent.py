@@ -116,8 +116,8 @@ def send_message(user_text: str, conversation: list = None) -> str:
 
     conversation.append({"role": "user", "parts": [{"text": user_text}]})
 
-    # Agent loop — up to 5 tool call rounds
-    for _ in range(5):
+    # Agent loop — up to 10 tool call rounds
+    for _ in range(10):
         response = call_gemini(conversation)
         if "error" in response:
             return f"Error: {response['error']}"
@@ -151,7 +151,7 @@ def send_message(user_text: str, conversation: list = None) -> str:
             })
         conversation.append({"role": "user", "parts": tool_results})
 
-    return "Agent reached maximum tool call depth."
+    return "I made several tool calls but couldn't complete the task. Try a simpler question."
 
 
 def chat():
