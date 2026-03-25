@@ -1,17 +1,17 @@
 # NanoHA Roadmap
 
-## V1 — Foundation (Current)
+## V1 — Foundation (Complete)
 
 ### Phase 1: Agent + System Setup
 - [x] Docker Compose stack (HA, Whisper, Piper)
 - [x] Minimal setup.py (start agent, ask LLM key)
 - [x] `ha_setup` tools: deploy services, detect hardware, create HA user, generate tokens
 - [x] Shared ha_client module (WebSocket + REST)
-- [x] E2E test suite with mock HA server (68 tests)
+- [x] E2E test suite with mock HA server
 
 ### Phase 2: Device Onboarding
 - [x] `ha_devices` tools: discover devices, start/continue config flows, manage areas
-- [ ] Agent system prompt with onboarding conversation flow
+- [x] Agent system prompt with onboarding conversation flow
 - [x] Support for WiFi devices (auto-discovered by HA)
 
 ### Phase 3: Voice Channel
@@ -21,21 +21,21 @@
 
 ### Phase 4: Home Control
 - [x] `ha_control` tools: list entities, get states, call services
-- [ ] Agent system prompt for natural language device control
+- [x] Agent system prompt for natural language device control
 
 ### Phase 5: Info + Polish
 - [x] `ha_info` tools: state history, health checks, config
-- [ ] Friendly error messages across all tools
-- [x] Test suite (unit + E2E)
+- [x] Friendly error messages across all tools
+- [x] Test suite (82 tests: unit + E2E)
 
 ---
 
-## V2 — Enhanced Experience
+## V2 — Enhanced Experience (In Progress)
 
-- [ ] Automation management tools (list, create, trigger, enable/disable)
-- [ ] Proactive monitoring (event subscription, anomaly detection)
+- [x] Automation management tools (list, create, trigger, enable/disable)
+- [x] Proactive monitoring (anomaly detection: open doors, motion at night, low battery)
+- [x] Event subscription tool (watch_events with duration/max limits)
 - [ ] Cloud STT/TTS option (OpenAI Whisper API + ElevenLabs)
-- [ ] Scheduled automations via agent ("every morning at 7, turn on lights gradually")
 - [ ] Web chat UI for browser-based interaction
 - [ ] Telegram/WhatsApp channel (Nanobot built-in support)
 
