@@ -164,5 +164,80 @@
     "name": "get_config",
     "description": "Get Home Assistant configuration summary (version, components, location)",
     "parameters": {}
+  },
+  {
+    "name": "list_automations",
+    "description": "List all automations with their current state (on/off) and last triggered time",
+    "parameters": {}
+  },
+  {
+    "name": "trigger_automation",
+    "description": "Manually trigger an automation",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "entity_id": {"type": "string", "description": "e.g. automation.morning_lights"}
+      },
+      "required": ["entity_id"]
+    }
+  },
+  {
+    "name": "enable_automation",
+    "description": "Enable a disabled automation",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "entity_id": {"type": "string"}
+      },
+      "required": ["entity_id"]
+    }
+  },
+  {
+    "name": "disable_automation",
+    "description": "Disable an automation",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "entity_id": {"type": "string"}
+      },
+      "required": ["entity_id"]
+    }
+  },
+  {
+    "name": "reload_automations",
+    "description": "Reload all automations from configuration files",
+    "parameters": {}
+  },
+  {
+    "name": "check_anomalies",
+    "description": "Check for anomalous states: open doors/windows, motion at night, low battery devices",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "hours": {"type": "integer", "default": 1, "description": "How many hours back to check"}
+      }
+    }
+  },
+  {
+    "name": "watch_events",
+    "description": "Subscribe to real-time HA events for a duration. Returns collected events.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "event_type": {"type": "string", "description": "Filter to event type, e.g. 'state_changed'. Omit for all."},
+        "duration_seconds": {"type": "integer", "default": 60},
+        "max_events": {"type": "integer", "default": 50}
+      }
+    }
+  },
+  {
+    "name": "configure_google_cloud_stt",
+    "description": "Set up Google Cloud Speech-to-Text in Home Assistant for higher quality voice recognition",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "api_key": {"type": "string", "description": "Google Cloud API key. If omitted, reads GOOGLE_CLOUD_API_KEY env."}
+      }
+    }
   }
 ]

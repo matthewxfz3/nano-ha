@@ -26,18 +26,18 @@
 ### Phase 5: Info + Polish
 - [x] `ha_info` tools: state history, health checks, config
 - [x] Friendly error messages across all tools
-- [x] Test suite (82 tests: unit + E2E)
+- [x] Test suite (94 tests: unit + E2E)
 
 ---
 
-## V2 — Enhanced Experience (In Progress)
+## V2 — Enhanced Experience (Complete)
 
-- [x] Automation management tools (list, create, trigger, enable/disable)
+- [x] Automation management tools (list, trigger, enable/disable, reload)
 - [x] Proactive monitoring (anomaly detection: open doors, motion at night, low battery)
 - [x] Event subscription tool (watch_events with duration/max limits)
-- [ ] Cloud STT/TTS option (OpenAI Whisper API + ElevenLabs)
+- [x] Google Cloud STT option (alternative to local Whisper)
+- [x] Telegram channel support (via Nanobot config)
 - [ ] Web chat UI for browser-based interaction
-- [ ] Telegram/WhatsApp channel (Nanobot built-in support)
 
 ---
 
