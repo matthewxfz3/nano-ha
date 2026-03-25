@@ -61,15 +61,27 @@ class TestListEntities:
 
 
 class TestGetEntityState:
-    @patch("tools.ha_control.ws_send", return_value=MOCK_STATES)
-    def test_found(self, mock_ws):
+    @patch("tools.ha_control.rest_get")
+    def test_found(self, mock_rest):
+        mock_rest.return_value = {
+            "success": True,
+            "data": {
+                "entity_id": "light.living_room",
+                "state": "on",
+                "attributes": {"friendly_name": "Living Room Light", "brightness": 200},
+                "last_changed": "2026-03-24T10:00:00Z",
+                "last_updated": "2026-03-24T10:00:00Z",
+            },
+        }
         result = get_entity_state("light.living_room")
         assert result["success"] is True
         assert result["state"] == "on"
         assert result["attributes"]["brightness"] == 200
+        mock_rest.assert_called_once_with("/api/states/light.living_room")
 
-    @patch("tools.ha_control.ws_send", return_value=MOCK_STATES)
-    def test_not_found(self, mock_ws):
+    @patch("tools.ha_control.rest_get")
+    def test_not_found(self, mock_rest):
+        mock_rest.return_value = {"success": False, "status_code": 404, "error": "Not found"}
         result = get_entity_state("light.nonexistent")
         assert result["success"] is False
         assert "not found" in result["error"]

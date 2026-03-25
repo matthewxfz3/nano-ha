@@ -1,9 +1,9 @@
 """NanoHA Control Tools — entity states and service calls."""
 
-from tools.ha_client import ws_send
+from tools.ha_client import rest_get, ws_send
 
 
-def list_entities(domain: str = None, area: str = None) -> dict:
+def list_entities(domain: str | None = None, area: str | None = None) -> dict:
     """List entities, optionally filtered by domain or area."""
     result = ws_send({"type": "get_states"})
     if not result.get("success"):
@@ -40,30 +40,27 @@ def list_entities(domain: str = None, area: str = None) -> dict:
 
 
 def get_entity_state(entity_id: str) -> dict:
-    """Get current state and attributes of an entity."""
-    result = ws_send({"type": "get_states"})
+    """Get current state and attributes of a single entity via REST."""
+    result = rest_get(f"/api/states/{entity_id}")
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {"success": False, "error": f"Entity {entity_id} not found"}
 
-    for entity in result.get("result", []):
-        if entity["entity_id"] == entity_id:
-            return {
-                "success": True,
-                "entity_id": entity["entity_id"],
-                "state": entity["state"],
-                "attributes": entity.get("attributes", {}),
-                "last_changed": entity.get("last_changed"),
-                "last_updated": entity.get("last_updated"),
-            }
-
-    return {"success": False, "error": f"Entity {entity_id} not found"}
+    entity = result["data"]
+    return {
+        "success": True,
+        "entity_id": entity["entity_id"],
+        "state": entity["state"],
+        "attributes": entity.get("attributes", {}),
+        "last_changed": entity.get("last_changed"),
+        "last_updated": entity.get("last_updated"),
+    }
 
 
 def call_service(
     domain: str,
     service: str,
-    entity_id: str = None,
-    data: dict = None,
+    entity_id: str | None = None,
+    data: dict | None = None,
 ) -> dict:
     """Call a Home Assistant service (e.g., light.turn_on)."""
     service_data = dict(data) if data else {}
