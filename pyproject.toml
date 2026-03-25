@@ -13,7 +13,19 @@ dependencies = [
 ha = [
     "homeassistant",
     "home-assistant-frontend",
+    "home-assistant-intents",
     "PyTurboJPEG",
+    "hassil",
+    "pymicro-vad",
+    "go2rtc-client",
+    "ha-ffmpeg",
+    "av",
+    "mutagen",
+    "aiodiscover",
+    "aiodhcpwatcher",
+    "aiousbwatcher",
+    "async-upnp-client",
+    "pyserial",
 ]
 nanobot = [
     "nanobot-ai>=0.1.4",
