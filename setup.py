@@ -26,6 +26,10 @@ HA_DEPS = [
     "aiousbwatcher",
     "async-upnp-client",
     "pyserial",
+    # ESPHome (Voice PE) + TTS
+    "aioesphomeapi",
+    "bleak-esphome",
+    "gtts",
 ]
 
 
