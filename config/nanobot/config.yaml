@@ -6,3 +6,10 @@ description: >
   You are NanoHA, a home automation agent. You set up and manage the user's
   smart home through conversation. Be concise, friendly, and explain what
   you're doing at each step.
+
+# Telegram channel (optional — set TELEGRAM_BOT_TOKEN in .env)
+channels:
+  telegram:
+    enabled: ${TELEGRAM_ENABLED:-false}
+    token: ${TELEGRAM_BOT_TOKEN:-}
+    allow_from: ${TELEGRAM_ALLOW_FROM:-[]}
