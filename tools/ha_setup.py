@@ -38,6 +38,14 @@ def detect_hardware() -> dict:
     }
 
 
+def _get_compose_dir() -> str:
+    """Get the directory containing docker-compose.yml."""
+    return os.environ.get(
+        "NANOHA_DIR",
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    )
+
+
 def deploy_service(service_name: str) -> dict:
     """Start a Docker Compose service (ha, voice, etc.)."""
     profile_map = {
@@ -52,7 +60,8 @@ def deploy_service(service_name: str) -> dict:
         cmd += ["--profile", profile]
     cmd += ["up", "-d", service_name]
 
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    compose_dir = _get_compose_dir()
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=compose_dir)
     if result.returncode != 0:
         log.error("Failed to deploy %s: %s", service_name, result.stderr.strip())
     return {
@@ -65,10 +74,10 @@ def deploy_service(service_name: str) -> dict:
 
 def check_service_health(service_name: str | None = None) -> dict:
     """Check health of one or all services."""
-    cmd = ["docker", "compose", "ps", "--format", "json"]
+    cmd = ["docker", "compose", "--profile", "full", "ps", "--format", "json"]
     if service_name:
         cmd.append(service_name)
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=True, text=True, cwd=_get_compose_dir())
     return {
         "success": result.returncode == 0,
         "output": result.stdout.strip(),

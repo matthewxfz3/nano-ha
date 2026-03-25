@@ -1,35 +1,25 @@
 services:
-  # AI Agent — starts first, deploys other services as needed
-  nanobot:
-    image: python:3.12-slim
-    container_name: nanoha-agent
-    volumes:
-      - ./config/nanobot:/app/config
-      - ./tools:/app/tools
-      - /var/run/docker.sock:/var/run/docker.sock
-    env_file: .env
-    working_dir: /app
-    command: >
-      bash -c "pip install -q nanobot-ai python-hass-client &&
-               nanobot --config /app/config/config.yaml"
-    restart: unless-stopped
-    networks:
-      - nanoha
-
-  # Home Assistant Core — deployed by agent
+  # Home Assistant Core — deployed by agent or manually
   homeassistant:
     image: ghcr.io/home-assistant/home-assistant:stable
     container_name: nanoha-ha
     volumes:
-      - ./config/ha:/config
+      - ha_config:/config
       - ./bridge:/config/custom_components/nanoha
     ports:
       - "8123:8123"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8123/api/"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 60s
     networks:
       - nanoha
     profiles:
       - ha
+      - full
 
   # Speech-to-Text — deployed by agent when Voice PE is set up
   whisper:
@@ -43,6 +33,7 @@ services:
       - nanoha
     profiles:
       - voice
+      - full
 
   # Text-to-Speech — deployed by agent when Voice PE is set up
   piper:
@@ -56,6 +47,10 @@ services:
       - nanoha
     profiles:
       - voice
+      - full
+
+volumes:
+  ha_config:
 
 networks:
   nanoha:
