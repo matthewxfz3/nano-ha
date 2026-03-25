@@ -1,12 +1,18 @@
 """NanoHA Conversation Agent — forwards voice/text to Nanobot."""
 
+import logging
+
+import aiohttp
 from homeassistant.components import conversation
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import MATCH_ALL
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import DEFAULT_NANOBOT_URL, DOMAIN
+from .const import DEFAULT_CONTEXT_WINDOW, DEFAULT_NANOBOT_URL, DEFAULT_REQUEST_TIMEOUT
+
+log = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
@@ -41,8 +47,8 @@ class NanoHAConversationAgent(
         self._attr_unique_id = f"{entry.entry_id}_conversation"
 
     @property
-    def supported_languages(self) -> list[str]:
-        return ["en"]
+    def supported_languages(self) -> list[str] | str:
+        return MATCH_ALL
 
     async def async_added_to_hass(self) -> None:
         """Register as conversation agent when added to HA."""
@@ -61,18 +67,19 @@ class NanoHAConversationAgent(
         session = async_get_clientsession(self.hass)
 
         self._context.append({"role": "user", "content": user_input.text})
-        if len(self._context) > 20:
-            self._context = self._context[-20:]
+        if len(self._context) > DEFAULT_CONTEXT_WINDOW:
+            self._context = self._context[-DEFAULT_CONTEXT_WINDOW:]
 
         try:
             resp = await session.post(
                 f"{self.nanobot_url}/v1/chat/completions",
                 json={"messages": self._context, "stream": False},
-                timeout=30,
+                timeout=DEFAULT_REQUEST_TIMEOUT,
             )
             data = await resp.json()
             response_text = data["choices"][0]["message"]["content"]
-        except Exception:
+        except (aiohttp.ClientError, TimeoutError, KeyError) as e:
+            log.warning("Nanobot request failed: %s", e)
             response_text = "I'm having trouble connecting. Please try again."
 
         self._context.append({"role": "assistant", "content": response_text})

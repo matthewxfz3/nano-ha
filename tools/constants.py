@@ -1,0 +1,6 @@
+"""Shared constants for NanoHA tools."""
+
+DEFAULT_TIMEOUT = 30
+HEALTH_CHECK_TIMEOUT = 5
+CONTEXT_WINDOW_SIZE = 20
+WS_COMMAND_START_ID = 1
