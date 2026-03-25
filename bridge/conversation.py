@@ -16,7 +16,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up NanoHA conversation entity."""
     nanobot_url = entry.data.get("nanobot_url", DEFAULT_NANOBOT_URL)
-    async_add_entities([NanoHAConversationEntity(hass, entry, nanobot_url)])
+    async_add_entities([NanoHAConversationAgent(hass, entry, nanobot_url)])
 
 
 class NanoHAConversationAgent(
