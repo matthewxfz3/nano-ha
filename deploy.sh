@@ -108,7 +108,9 @@ YAML
 install_deps() {
     echo "Installing Python dependencies..."
     if command -v pip3 &>/dev/null; then
-        pip3 install --user -q httpx websockets 2>/dev/null || true
+        pip3 install --user -q httpx websockets homeassistant home-assistant-frontend PyTurboJPEG 2>/dev/null || \
+        pip3 install --user -q --break-system-packages httpx websockets homeassistant home-assistant-frontend PyTurboJPEG 2>/dev/null || \
+        echo "Warning: some packages failed to install. Run setup.py for guided install."
     fi
 }
 

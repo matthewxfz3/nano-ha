@@ -7,10 +7,17 @@ license = "MIT"
 dependencies = [
     "httpx>=0.27",
     "websockets>=12.0",
-    "nanobot-ai>=0.1.4",
 ]
 
 [project.optional-dependencies]
+ha = [
+    "homeassistant",
+    "home-assistant-frontend",
+    "PyTurboJPEG",
+]
+nanobot = [
+    "nanobot-ai>=0.1.4",
+]
 dev = [
     "pytest>=8.0",
     "ruff>=0.4",
