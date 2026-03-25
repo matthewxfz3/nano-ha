@@ -1,0 +1,168 @@
+[
+  {
+    "name": "check_docker",
+    "description": "Check if Docker is installed and running",
+    "parameters": {}
+  },
+  {
+    "name": "detect_hardware",
+    "description": "Scan for USB Zigbee coordinators",
+    "parameters": {}
+  },
+  {
+    "name": "deploy_service",
+    "description": "Start a Docker Compose service. Use 'homeassistant', 'whisper', or 'piper'.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "service_name": {"type": "string", "description": "Service to deploy: homeassistant, whisper, or piper"}
+      },
+      "required": ["service_name"]
+    }
+  },
+  {
+    "name": "check_service_health",
+    "description": "Check health of running services",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "service_name": {"type": "string", "description": "Specific service to check, or omit for all"}
+      }
+    }
+  },
+  {
+    "name": "generate_ha_token",
+    "description": "Create HA admin user and get long-lived API token. Only works on first run.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "username": {"type": "string", "default": "admin"},
+        "password": {"type": "string", "default": "nanoha"}
+      }
+    }
+  },
+  {
+    "name": "discover_devices",
+    "description": "Scan for new devices on the network",
+    "parameters": {}
+  },
+  {
+    "name": "list_devices",
+    "description": "List all registered devices, optionally filtered by area",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "area": {"type": "string", "description": "Area ID to filter by"}
+      }
+    }
+  },
+  {
+    "name": "start_config_flow",
+    "description": "Begin setting up a device integration. Returns what info is needed.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "handler": {"type": "string", "description": "Integration name, e.g. 'hue', 'ikea_tradfri', 'tuya'"}
+      },
+      "required": ["handler"]
+    }
+  },
+  {
+    "name": "continue_config_flow",
+    "description": "Continue a device setup flow with user-provided info",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "flow_id": {"type": "string"},
+        "user_input": {"type": "object", "description": "Key-value pairs for the current setup step"}
+      },
+      "required": ["flow_id"]
+    }
+  },
+  {
+    "name": "list_areas",
+    "description": "List all rooms/areas in the home",
+    "parameters": {}
+  },
+  {
+    "name": "create_area",
+    "description": "Create a new room/area",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "name": {"type": "string", "description": "Room name, e.g. 'Living Room', 'Kitchen'"}
+      },
+      "required": ["name"]
+    }
+  },
+  {
+    "name": "assign_device_to_area",
+    "description": "Assign a device to a room",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "device_id": {"type": "string"},
+        "area_id": {"type": "string"}
+      },
+      "required": ["device_id", "area_id"]
+    }
+  },
+  {
+    "name": "list_entities",
+    "description": "List all entities (devices/sensors), optionally filtered by domain or area",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "domain": {"type": "string", "description": "Filter by type: light, sensor, switch, climate, lock, etc."},
+        "area": {"type": "string", "description": "Filter by area ID"}
+      }
+    }
+  },
+  {
+    "name": "get_entity_state",
+    "description": "Get the current state and attributes of a specific entity",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "entity_id": {"type": "string", "description": "e.g. light.living_room, sensor.temperature"}
+      },
+      "required": ["entity_id"]
+    }
+  },
+  {
+    "name": "call_service",
+    "description": "Control a device by calling a Home Assistant service",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "domain": {"type": "string", "description": "Service domain: light, switch, climate, lock, etc."},
+        "service": {"type": "string", "description": "Service name: turn_on, turn_off, toggle, set_temperature, lock, unlock"},
+        "entity_id": {"type": "string", "description": "Target entity"},
+        "data": {"type": "object", "description": "Additional service data, e.g. {\"brightness\": 128}"}
+      },
+      "required": ["domain", "service"]
+    }
+  },
+  {
+    "name": "get_history",
+    "description": "Get state history for an entity over the past N hours",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "entity_id": {"type": "string"},
+        "hours": {"type": "integer", "default": 24}
+      },
+      "required": ["entity_id"]
+    }
+  },
+  {
+    "name": "health_check",
+    "description": "Check health of all NanoHA services (HA, Whisper, Piper, Docker)",
+    "parameters": {}
+  },
+  {
+    "name": "get_config",
+    "description": "Get Home Assistant configuration summary (version, components, location)",
+    "parameters": {}
+  }
+]
