@@ -3,39 +3,41 @@
 ## V1 — Foundation (Current)
 
 ### Phase 1: Agent + System Setup
-- [ ] Docker Compose stack (HA, Whisper, Piper, Nanobot)
-- [ ] Minimal setup.py (start agent, ask LLM key)
-- [ ] `ha_setup` tools: deploy services, detect hardware, create HA user, generate tokens
+- [x] Docker Compose stack (HA, Whisper, Piper)
+- [x] Minimal setup.py (start agent, ask LLM key)
+- [x] `ha_setup` tools: deploy services, detect hardware, create HA user, generate tokens
+- [x] Shared ha_client module (WebSocket + REST)
+- [x] E2E test suite with mock HA server (68 tests)
 
 ### Phase 2: Device Onboarding
-- [ ] `ha_devices` tools: discover devices, start/continue config flows, manage areas
-- [ ] Agent-guided onboarding conversation flow
-- [ ] Support for WiFi devices (auto-discovered by HA)
-- [ ] Support for Zigbee devices (via Zigbee2MQTT, when coordinator present)
+- [x] `ha_devices` tools: discover devices, start/continue config flows, manage areas
+- [ ] Agent system prompt with onboarding conversation flow
+- [x] Support for WiFi devices (auto-discovered by HA)
 
 ### Phase 3: Voice Channel
-- [ ] NanoHA Bridge (HA custom conversation agent)
-- [ ] Voice PE integration via HA Assist pipeline
-- [ ] Conversation context management (multi-turn)
+- [x] NanoHA Bridge (HA custom conversation agent)
+- [x] Voice PE integration via HA Assist pipeline config
+- [x] Conversation context management (multi-turn)
 
 ### Phase 4: Home Control
-- [ ] `ha_control` tools: list entities, get states, call services
-- [ ] Natural language device control ("turn on the lights", "set to 22 degrees")
+- [x] `ha_control` tools: list entities, get states, call services
+- [ ] Agent system prompt for natural language device control
 
 ### Phase 5: Info + Polish
-- [ ] `ha_info` tools: state history, health checks, error logs
-- [ ] Friendly error messages
-- [ ] Test suite
+- [x] `ha_info` tools: state history, health checks, config
+- [ ] Friendly error messages across all tools
+- [x] Test suite (unit + E2E)
 
 ---
 
 ## V2 — Enhanced Experience
 
-- [ ] Cloud STT/TTS option (OpenAI Whisper API + ElevenLabs) for higher voice quality
-- [ ] Proactive monitoring — agent alerts on anomalies ("motion at front door at 2 AM")
+- [ ] Automation management tools (list, create, trigger, enable/disable)
+- [ ] Proactive monitoring (event subscription, anomaly detection)
+- [ ] Cloud STT/TTS option (OpenAI Whisper API + ElevenLabs)
 - [ ] Scheduled automations via agent ("every morning at 7, turn on lights gradually")
 - [ ] Web chat UI for browser-based interaction
-- [ ] Telegram/WhatsApp channel (Nanobot has built-in support)
+- [ ] Telegram/WhatsApp channel (Nanobot built-in support)
 
 ---
 
