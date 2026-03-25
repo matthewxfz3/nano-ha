@@ -2,6 +2,8 @@
 
 from unittest.mock import MagicMock, patch
 
+import httpx
+
 from tools.ha_info import get_config, get_history, health_check
 
 
@@ -49,10 +51,12 @@ class TestHealthCheck:
     @patch("tools.ha_info.subprocess.run")
     @patch("tools.ha_info.httpx.get")
     def test_ha_down(self, mock_get, mock_run):
-        mock_get.side_effect = Exception("Connection refused")
+        mock_get.side_effect = httpx.ConnectError("Connection refused")
         mock_run.return_value = MagicMock(returncode=0, stdout="")
         result = health_check()
         assert result["services"]["homeassistant"] is False
+        assert result["services"]["whisper"] is False
+        assert result["services"]["piper"] is False
         assert result["all_healthy"] is False
 
 
