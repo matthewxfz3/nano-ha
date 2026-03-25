@@ -9,9 +9,23 @@ import sys
 HA_DEPS = [
     "homeassistant",
     "home-assistant-frontend",
+    "home-assistant-intents",
     "PyTurboJPEG",
     "httpx",
     "websockets",
+    "setuptools",
+    # Components required for mobile_app / default_config
+    "hassil",
+    "pymicro-vad",
+    "go2rtc-client",
+    "ha-ffmpeg",
+    "av",
+    "mutagen",
+    "aiodiscover",
+    "aiodhcpwatcher",
+    "aiousbwatcher",
+    "async-upnp-client",
+    "pyserial",
 ]
 
 
