@@ -5,10 +5,12 @@ from tools.ha_client import ws_send
 
 def discover_devices() -> dict:
     """Trigger HA discovery and return found config flow entries."""
-    # List in-progress discovery flows
     result = ws_send({"type": "config_entries/flow/progress"})
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": "Cannot scan for devices. Home Assistant may be unreachable.",
+        }
 
     flows = result.get("result", [])
     return {
@@ -25,11 +27,14 @@ def discover_devices() -> dict:
     }
 
 
-def list_devices(area: str = None) -> dict:
+def list_devices(area: str | None = None) -> dict:
     """List all registered devices, optionally filtered by area."""
     result = ws_send({"type": "config/device_registry/list"})
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": "Cannot list devices. Home Assistant may be unreachable.",
+        }
 
     devices = result.get("result", [])
     if area:
@@ -53,10 +58,7 @@ def list_devices(area: str = None) -> dict:
 
 
 def start_config_flow(handler: str) -> dict:
-    """Start an integration config flow (e.g., handler='hue').
-
-    Returns flow_id and the first step's requirements (form fields, etc.).
-    """
+    """Start an integration config flow (e.g., handler='hue')."""
     result = ws_send(
         {
             "type": "config_entries/flow",
@@ -65,7 +67,10 @@ def start_config_flow(handler: str) -> dict:
         }
     )
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": f"Cannot start setup for '{handler}'. Check that the integration name is correct.",
+        }
 
     flow = result.get("result", {})
     return {
@@ -79,7 +84,7 @@ def start_config_flow(handler: str) -> dict:
     }
 
 
-def continue_config_flow(flow_id: str, user_input: dict = None) -> dict:
+def continue_config_flow(flow_id: str, user_input: dict | None = None) -> dict:
     """Continue or complete a config flow step."""
     result = ws_send(
         {
@@ -89,7 +94,10 @@ def continue_config_flow(flow_id: str, user_input: dict = None) -> dict:
         }
     )
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": f"Setup step failed for flow '{flow_id}'. The flow may have expired — try starting over.",
+        }
 
     flow = result.get("result", {})
     return {
@@ -108,7 +116,10 @@ def list_areas() -> dict:
     """List all areas/rooms."""
     result = ws_send({"type": "config/area_registry/list"})
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": "Cannot list areas. Home Assistant may be unreachable.",
+        }
 
     areas = result.get("result", [])
     return {
@@ -125,7 +136,10 @@ def create_area(name: str) -> dict:
     """Create a new area/room."""
     result = ws_send({"type": "config/area_registry/create", "name": name})
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": f"Cannot create area '{name}'. It may already exist.",
+        }
 
     area = result.get("result", {})
     return {
@@ -145,7 +159,10 @@ def assign_device_to_area(device_id: str, area_id: str) -> dict:
         }
     )
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": f"Cannot assign device '{device_id}' to area '{area_id}'. Check that both IDs are valid.",
+        }
 
     return {
         "success": True,

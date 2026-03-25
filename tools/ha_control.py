@@ -3,11 +3,22 @@
 from tools.ha_client import rest_get, ws_send
 
 
+def _ws_error_msg(result: dict, action: str) -> str:
+    """Extract a human-readable error from a WS result."""
+    err = result.get("error", {})
+    if isinstance(err, dict):
+        return err.get("message", f"Failed to {action}")
+    return str(err) or f"Failed to {action}"
+
+
 def list_entities(domain: str | None = None, area: str | None = None) -> dict:
     """List entities, optionally filtered by domain or area."""
     result = ws_send({"type": "get_states"})
     if not result.get("success"):
-        return {"success": False, "error": result}
+        return {
+            "success": False,
+            "error": f"Cannot list entities. Home Assistant may be unreachable.",
+        }
 
     entities = result.get("result", [])
 
@@ -15,7 +26,6 @@ def list_entities(domain: str | None = None, area: str | None = None) -> dict:
         entities = [e for e in entities if e["entity_id"].startswith(f"{domain}.")]
 
     if area:
-        # Get area->entity mapping via entity registry
         reg = ws_send({"type": "config/entity_registry/list"})
         if reg.get("success"):
             area_entity_ids = {
@@ -43,7 +53,10 @@ def get_entity_state(entity_id: str) -> dict:
     """Get current state and attributes of a single entity via REST."""
     result = rest_get(f"/api/states/{entity_id}")
     if not result.get("success"):
-        return {"success": False, "error": f"Entity {entity_id} not found"}
+        return {
+            "success": False,
+            "error": f"Entity '{entity_id}' not found. Check the entity ID or run list_entities() to see available devices.",
+        }
 
     entity = result["data"]
     return {
@@ -80,4 +93,7 @@ def call_service(
 
     if result.get("success"):
         return {"success": True, "service": f"{domain}.{service}"}
-    return {"success": False, "error": result}
+    return {
+        "success": False,
+        "error": f"Failed to call {domain}.{service}. {_ws_error_msg(result, 'call service')}",
+    }
