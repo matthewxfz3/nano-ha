@@ -1,8 +1,8 @@
 """Tests for ha_setup tools."""
 
-import json
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock, patch
 
+import httpx
 import pytest
 
 from tools.ha_setup import (
@@ -85,6 +85,20 @@ class TestCreateHaUser:
         assert result["success"] is False
         assert result["status_code"] == 403
 
+    @patch("tools.ha_setup.httpx.post")
+    def test_connection_error(self, mock_post):
+        mock_post.side_effect = httpx.ConnectError("Connection refused")
+        result = create_ha_user()
+        assert result["success"] is False
+        assert "Cannot connect" in result["error"]
+
+    @patch("tools.ha_setup.httpx.post")
+    def test_timeout(self, mock_post):
+        mock_post.side_effect = httpx.TimeoutException("Timeout")
+        result = create_ha_user()
+        assert result["success"] is False
+        assert "Timeout" in result["error"]
+
 
 class TestExchangeAuthCode:
     @patch("tools.ha_setup.httpx.post")
@@ -113,11 +127,9 @@ class TestExchangeAuthCode:
 
 
 class TestConfigureAssistPipeline:
-    @patch("tools.ha_setup.asyncio.run")
-    def test_create_and_set_preferred(self, mock_run):
-        # First call: create pipeline
-        # Second call: set preferred
-        mock_run.side_effect = [
+    @patch("tools.ha_setup.ws_send")
+    def test_create_and_set_preferred(self, mock_ws):
+        mock_ws.side_effect = [
             {
                 "success": True,
                 "result": {
@@ -131,10 +143,29 @@ class TestConfigureAssistPipeline:
         result = configure_assist_pipeline(access_token="tok123")
         assert result["success"] is True
         assert result["pipeline_id"] == "pipeline-001"
-        assert mock_run.call_count == 2
+        assert mock_ws.call_count == 2
 
-    @patch("tools.ha_setup.asyncio.run")
-    def test_create_fails(self, mock_run):
-        mock_run.return_value = {"success": False, "error": {"message": "fail"}}
+    @patch("tools.ha_setup.ws_send")
+    def test_create_fails(self, mock_ws):
+        mock_ws.return_value = {"success": False, "error": {"message": "fail"}}
         result = configure_assist_pipeline(access_token="tok123")
+        assert result["success"] is False
+
+
+class TestGenerateHaToken:
+    @patch("tools.ha_setup.ws_send")
+    @patch("tools.ha_setup._exchange_auth_code")
+    @patch("tools.ha_setup.create_ha_user")
+    def test_full_flow(self, mock_user, mock_exchange, mock_ws):
+        mock_user.return_value = {"success": True, "auth_code": "code123"}
+        mock_exchange.return_value = {"success": True, "access_token": "short_tok"}
+        mock_ws.return_value = {"success": True, "result": "long_lived_tok"}
+        result = generate_ha_token()
+        assert result["success"] is True
+        assert result["token"] == "long_lived_tok"
+
+    @patch("tools.ha_setup.create_ha_user")
+    def test_user_creation_fails(self, mock_user):
+        mock_user.return_value = {"success": False, "error": "already done"}
+        result = generate_ha_token()
         assert result["success"] is False
