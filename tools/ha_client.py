@@ -13,6 +13,7 @@ from tools.constants import DEFAULT_TIMEOUT, WS_COMMAND_START_ID
 log = logging.getLogger(__name__)
 
 HA_URL = os.environ.get("HA_URL", "http://homeassistant:8123")
+HA_WS_URL = os.environ.get("HA_WS_URL", "")
 
 
 def _get_token() -> str:
@@ -20,11 +21,18 @@ def _get_token() -> str:
     return os.environ.get("HA_TOKEN", "")
 
 
+def _get_ws_url() -> str:
+    """Get WebSocket URL, derived from HA_URL if not explicitly set."""
+    ws_override = os.environ.get("HA_WS_URL", "") or HA_WS_URL
+    if ws_override:
+        return ws_override
+    return HA_URL.replace("http://", "ws://").replace("https://", "wss://") + "/api/websocket"
+
+
 async def ws_command(command: dict, access_token: str | None = None) -> dict:
     """Send an authenticated WebSocket command to HA and return the result."""
     token = access_token or _get_token()
-    ws_url = HA_URL.replace("http://", "ws://").replace("https://", "wss://")
-    ws_url += "/api/websocket"
+    ws_url = _get_ws_url()
 
     async with websockets.connect(ws_url) as ws:
         msg = json.loads(await ws.recv())
